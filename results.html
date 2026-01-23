@@ -545,7 +545,7 @@
                     </svg>
                     Back to Ballot
                 </a>
-                <button class="btn btn-admin" id="adminToggle" onclick="toggleAdminMode()">
+                <button class="btn btn-admin" id="adminToggle">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                     </svg>
@@ -567,7 +567,7 @@
                 <span>Admin Mode Active - Select winners as they're announced</span>
             </div>
             <div class="admin-actions">
-                <button class="btn btn-outline" onclick="clearAllWinners()">Clear All Winners</button>
+                <button class="btn btn-outline" id="clearWinnersBtn">Clear All Winners</button>
             </div>
         </div>
 
@@ -578,7 +578,7 @@
             </p>
             <div class="import-row">
                 <input type="text" id="importCode" placeholder="Paste ballot code here...">
-                <button class="btn btn-primary" onclick="importBallot()">Import</button>
+                <button class="btn btn-primary" id="importBtn">Import</button>
             </div>
         </div>
 
@@ -606,8 +606,8 @@
         </section>
 
         <div class="comparison-toggle">
-            <button class="toggle-btn active" onclick="showView('winners')">Winners</button>
-            <button class="toggle-btn" onclick="showView('comparison')">Compare Picks</button>
+            <button class="toggle-btn active" id="winnersToggle" data-view="winners">Winners</button>
+            <button class="toggle-btn" id="comparisonToggle" data-view="comparison">Compare Picks</button>
         </div>
 
         <section id="winnersView" class="winners-section">
@@ -904,23 +904,25 @@
             const winnersCount = Object.keys(winners).length;
             document.getElementById('winnersCount').textContent = `${winnersCount} of 24 winners announced`;
 
-            section.innerHTML = Object.entries(CATEGORIES).map(([category, nominees]) => {
+            const categoryList = Object.entries(CATEGORIES);
+
+            section.innerHTML = categoryList.map(([category, nominees], catIdx) => {
                 const isMain = MAIN_CATEGORIES.includes(category);
                 const winner = winners[category];
                 const winnerData = nominees.find(n => n.name === winner);
 
                 if (adminMode) {
                     return `
-                        <div class="winner-card ${isMain ? 'main-category' : ''}">
+                        <div class="winner-card ${isMain ? 'main-category' : ''}" data-category-index="${catIdx}">
                             <div class="winner-card-header">
                                 <span class="winner-card-title">${category}</span>
                                 ${isMain ? '<span class="winner-badge">2 PTS</span>' : ''}
                             </div>
                             <div class="winner-card-body">
-                                <select class="admin-select ${winner ? 'has-winner' : ''}" onchange="setWinner('${category}', this.value)">
+                                <select class="admin-select ${winner ? 'has-winner' : ''}">
                                     <option value="">-- Select Winner --</option>
-                                    ${nominees.map(n => `
-                                        <option value="${n.name}" ${winner === n.name ? 'selected' : ''}>
+                                    ${nominees.map((n, nomIdx) => `
+                                        <option value="${nomIdx}" ${winner === n.name ? 'selected' : ''}>
                                             ${n.name}${n.film ? ` (${n.film})` : ''}
                                         </option>
                                     `).join('')}
@@ -954,6 +956,28 @@
                     `;
                 }
             }).join('');
+
+            // Add change handlers for admin selects
+            if (adminMode) {
+                section.querySelectorAll('.winner-card').forEach(card => {
+                    const catIdx = parseInt(card.dataset.categoryIndex);
+                    const [category, nominees] = categoryList[catIdx];
+                    const select = card.querySelector('.admin-select');
+
+                    if (select) {
+                        select.addEventListener('change', function() {
+                            const nomIdx = this.value;
+                            if (nomIdx === '') {
+                                delete winners[category];
+                            } else {
+                                winners[category] = nominees[parseInt(nomIdx)].name;
+                            }
+                            saveWinners();
+                            renderAll();
+                        });
+                    }
+                });
+            }
         }
 
         function renderComparison() {
@@ -1018,10 +1042,10 @@
             }
         }
 
-        function showView(view) {
+        function showView(view, clickedBtn) {
             const btns = document.querySelectorAll('.toggle-btn');
             btns.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            clickedBtn.classList.add('active');
 
             document.getElementById('winnersView').style.display = view === 'winners' ? 'grid' : 'none';
             document.getElementById('comparisonView').classList.toggle('active', view === 'comparison');
@@ -1036,6 +1060,22 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadData();
             renderAll();
+
+            // Admin toggle
+            document.getElementById('adminToggle').addEventListener('click', toggleAdminMode);
+
+            // Clear winners
+            document.getElementById('clearWinnersBtn').addEventListener('click', clearAllWinners);
+
+            // Import ballot
+            document.getElementById('importBtn').addEventListener('click', importBallot);
+
+            // View toggles
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    showView(this.dataset.view, this);
+                });
+            });
         });
     </script>
 </body>
