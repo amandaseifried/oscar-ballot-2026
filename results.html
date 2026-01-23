@@ -488,6 +488,21 @@
             background: var(--white);
         }
 
+        .delete-btn {
+            background: none;
+            border: none;
+            color: var(--error);
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: #FEE2E2;
+        }
+
         .footer {
             text-align: center;
             padding: 40px 24px;
@@ -588,7 +603,7 @@
                 <span id="participantCount">0 participants</span>
             </div>
             <table class="leaderboard-table">
-                <thead>
+                <thead id="leaderboardHead">
                     <tr>
                         <th>Rank</th>
                         <th>Name</th>
@@ -865,9 +880,22 @@
         }
 
         function renderLeaderboard() {
+            const thead = document.getElementById('leaderboardHead');
             const tbody = document.getElementById('leaderboardBody');
             const noParticipants = document.getElementById('noParticipants');
             const countEl = document.getElementById('participantCount');
+
+            // Update header based on admin mode
+            thead.innerHTML = `
+                <tr>
+                    <th>Rank</th>
+                    <th>Name</th>
+                    <th>Correct</th>
+                    <th>Penalty</th>
+                    <th>Score</th>
+                    ${adminMode ? '<th></th>' : ''}
+                </tr>
+            `;
 
             if (participants.length === 0) {
                 tbody.innerHTML = '';
@@ -879,8 +907,9 @@
             noParticipants.style.display = 'none';
             countEl.textContent = `${participants.length} participant${participants.length !== 1 ? 's' : ''}`;
 
-            const scored = participants.map(p => ({
+            const scored = participants.map((p, originalIdx) => ({
                 ...p,
+                originalIdx,
                 ...calculateScore(p)
             })).sort((a, b) => b.score - a.score);
 
@@ -894,9 +923,29 @@
                         <td class="correct-count">${p.correctPicks}/${Object.keys(winners).length}</td>
                         <td class="penalty-count">-${p.penalty}</td>
                         <td class="score">${p.score}</td>
+                        ${adminMode ? `<td><button class="delete-btn" data-participant-idx="${p.originalIdx}">Delete</button></td>` : ''}
                     </tr>
                 `;
             }).join('');
+
+            // Add click handlers for delete buttons
+            if (adminMode) {
+                tbody.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const idx = parseInt(this.dataset.participantIdx);
+                        deleteParticipant(idx);
+                    });
+                });
+            }
+        }
+
+        function deleteParticipant(idx) {
+            const name = participants[idx].name;
+            if (confirm(`Are you sure you want to remove ${name}'s ballot?`)) {
+                participants.splice(idx, 1);
+                saveParticipants();
+                renderAll();
+            }
         }
 
         function renderWinners() {
