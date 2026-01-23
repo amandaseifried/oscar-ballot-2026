@@ -719,27 +719,31 @@
                     </div>
                 `;
             }).join('');
+        }
 
-            // Add click handlers
-            grid.querySelectorAll('.film-card').forEach(card => {
-                card.addEventListener('click', function() {
-                    const idx = parseInt(this.dataset.filmIndex);
-                    const film = BEST_PICTURE_FILMS[idx];
-                    const index = state.filmsSeen.indexOf(film);
-                    if (index > -1) {
-                        state.filmsSeen.splice(index, 1);
-                    } else {
-                        state.filmsSeen.push(film);
-                    }
-                    saveState();
-                    renderFilmsSeen();
-                });
+        function setupFilmsClickHandler() {
+            const grid = document.getElementById('filmsGrid');
+            grid.addEventListener('click', function(e) {
+                const card = e.target.closest('.film-card');
+                if (!card) return;
+
+                const idx = parseInt(card.dataset.filmIndex);
+                const film = BEST_PICTURE_FILMS[idx];
+                const index = state.filmsSeen.indexOf(film);
+                if (index > -1) {
+                    state.filmsSeen.splice(index, 1);
+                } else {
+                    state.filmsSeen.push(film);
+                }
+                saveState();
+                renderFilmsSeen();
             });
         }
 
+        const categoryList = Object.entries(CATEGORIES);
+
         function renderCategories() {
             const section = document.getElementById('categoriesSection');
-            const categoryList = Object.entries(CATEGORIES);
 
             section.innerHTML = categoryList.map(([category, nominees], catIdx) => {
                 const isMain = MAIN_CATEGORIES.includes(category);
@@ -766,21 +770,22 @@
                     </div>
                 `;
             }).join('');
+        }
 
-            // Add click handlers
-            section.querySelectorAll('.category-card').forEach(card => {
+        function setupCategoriesClickHandler() {
+            const section = document.getElementById('categoriesSection');
+            section.addEventListener('click', function(e) {
+                const option = e.target.closest('.nominee-option');
+                if (!option) return;
+
+                const card = option.closest('.category-card');
                 const catIdx = parseInt(card.dataset.categoryIndex);
-                const [category, nominees] = categoryList[catIdx];
+                const nomIdx = parseInt(option.dataset.nomineeIndex);
 
-                card.querySelectorAll('.nominee-option').forEach(option => {
-                    option.addEventListener('click', function() {
-                        const nomIdx = parseInt(this.dataset.nomineeIndex);
-                        const nominee = nominees[nomIdx];
-                        state.picks[category] = nominee.name;
-                        saveState();
-                        renderCategories();
-                    });
-                });
+                const [category, nominees] = categoryList[catIdx];
+                state.picks[category] = nominees[nomIdx].name;
+                saveState();
+                renderCategories();
             });
         }
 
@@ -825,6 +830,10 @@
             renderFilmsSeen();
             renderCategories();
             updateScores();
+
+            // Set up event handlers (using delegation so they persist through re-renders)
+            setupFilmsClickHandler();
+            setupCategoriesClickHandler();
             document.getElementById('userName').addEventListener('input', saveState);
             document.getElementById('exportBtn').addEventListener('click', exportBallot);
         });
