@@ -195,39 +195,6 @@
             gap: 12px;
         }
 
-        /* Import Section */
-        .import-section {
-            background: var(--gray-50);
-            border: 1px solid var(--gray-200);
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 32px;
-        }
-
-        .import-section h3 {
-            font-family: 'Playfair Display', serif;
-            margin-bottom: 16px;
-        }
-
-        .import-row {
-            display: flex;
-            gap: 12px;
-        }
-
-        .import-row input {
-            flex: 1;
-            padding: 12px 16px;
-            border: 1.5px solid var(--gray-300);
-            border-radius: 8px;
-            font-size: 1rem;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .import-row input:focus {
-            outline: none;
-            border-color: var(--gold);
-        }
-
         /* Leaderboard */
         .leaderboard {
             margin-bottom: 48px;
@@ -586,17 +553,6 @@
             </div>
         </div>
 
-        <div class="import-section">
-            <h3>Import Ballot</h3>
-            <p style="color: var(--gray-400); margin-bottom: 12px; font-size: 0.875rem;">
-                Paste a ballot code from a friend to add them to the leaderboard
-            </p>
-            <div class="import-row">
-                <input type="text" id="importCode" placeholder="Paste ballot code here...">
-                <button class="btn btn-primary" id="importBtn">Import</button>
-            </div>
-        </div>
-
         <section class="leaderboard">
             <div class="section-header">
                 <h2 class="section-title">Standings</h2>
@@ -834,45 +790,6 @@
             }
 
             renderAll();
-        }
-
-        function importBallot() {
-            const input = document.getElementById('importCode');
-            const code = input.value.trim();
-
-            if (!code) {
-                alert('Please paste a ballot code');
-                return;
-            }
-
-            try {
-                const data = JSON.parse(atob(code));
-                if (!data.name || !data.picks) {
-                    throw new Error('Invalid ballot format');
-                }
-
-                const exists = participants.findIndex(p => p.name === data.name);
-                if (exists >= 0) {
-                    participants[exists] = {
-                        name: data.name,
-                        filmsSeen: data.filmsSeen || [],
-                        picks: data.picks
-                    };
-                } else {
-                    participants.push({
-                        name: data.name,
-                        filmsSeen: data.filmsSeen || [],
-                        picks: data.picks
-                    });
-                }
-
-                saveParticipants();
-                input.value = '';
-                renderAll();
-                alert(`${data.name}'s ballot imported successfully!`);
-            } catch (e) {
-                alert('Invalid ballot code. Please check and try again.');
-            }
         }
 
         function calculateScore(participant) {
@@ -1127,9 +1044,6 @@
 
             // Clear winners
             document.getElementById('clearWinnersBtn').addEventListener('click', clearAllWinners);
-
-            // Import ballot
-            document.getElementById('importBtn').addEventListener('click', importBallot);
 
             // View toggles
             document.querySelectorAll('.toggle-btn').forEach(btn => {

@@ -527,13 +527,12 @@
                     </svg>
                     Reset
                 </button>
-                <button class="btn btn-outline" id="exportBtn">
+                <button class="btn btn-primary" id="submitBtn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="7 10 12 15 17 10"/>
-                        <line x1="12" y1="15" x2="12" y2="3"/>
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
                     </svg>
-                    Export
+                    Submit Ballot
                 </button>
                 <a href="results.html" class="btn btn-primary">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -857,18 +856,48 @@
             document.getElementById('currentScore').textContent = score;
         }
 
-        function exportBallot() {
-            const exportData = {
-                name: state.userName || 'Anonymous',
-                filmsSeen: state.filmsSeen,
-                picks: state.picks,
-                exportedAt: new Date().toISOString()
-            };
+        function submitBallot() {
+            const totalCategories = Object.keys(CATEGORIES).length;
+            const pickedCount = Object.keys(state.picks).length;
+            const missingCount = totalCategories - pickedCount;
 
-            const dataStr = btoa(JSON.stringify(exportData));
-            navigator.clipboard.writeText(dataStr).then(() => {
-                alert('Ballot copied to clipboard! Share this code with your group admin.');
-            });
+            // Validate name
+            if (!state.userName || state.userName.trim() === '') {
+                alert('Please enter your name before submitting.');
+                document.getElementById('userName').focus();
+                return;
+            }
+
+            // Validate all picks made
+            if (missingCount > 0) {
+                const missingCategories = Object.keys(CATEGORIES).filter(cat => !state.picks[cat]);
+                alert(`You still need to make ${missingCount} pick${missingCount > 1 ? 's' : ''}:\n\n• ${missingCategories.slice(0, 5).join('\n• ')}${missingCategories.length > 5 ? `\n• ...and ${missingCategories.length - 5} more` : ''}`);
+                return;
+            }
+
+            // Mark as submitted
+            state.submitted = true;
+            state.submittedAt = new Date().toISOString();
+            saveState();
+
+            alert(`Ballot submitted successfully!\n\nName: ${state.userName}\nPicks: ${pickedCount}/${totalCategories}\nFilms Seen: ${state.filmsSeen.length}/10\n\nGood luck!`);
+
+            // Update button to show submitted state
+            updateSubmitButton();
+        }
+
+        function updateSubmitButton() {
+            const btn = document.getElementById('submitBtn');
+            if (state.submitted) {
+                btn.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    Submitted ✓
+                `;
+                btn.style.background = '#16A34A';
+            }
         }
 
         function resetBallot() {
@@ -923,7 +952,8 @@
             setupFilmsClickHandler();
             setupCategoriesClickHandler();
             document.getElementById('userName').addEventListener('input', saveState);
-            document.getElementById('exportBtn').addEventListener('click', exportBallot);
+            document.getElementById('submitBtn').addEventListener('click', submitBallot);
+            updateSubmitButton();
             document.getElementById('resetBtn').addEventListener('click', resetBallot);
 
             // Start countdown
