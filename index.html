@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oscar Ballot 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #C5A572;
+            --gold-dark: #A8894D;
+            --gold-light: #E8D5B0;
+            --black: #1A1A1A;
+            --white: #FFFFFF;
+            --gray-50: #FAFAFA;
+            --gray-100: #F5F5F5;
+            --gray-200: #E5E5E5;
+            --gray-300: #D4D4D4;
+            --gray-400: #A3A3A3;
+            --gray-600: #525252;
+            --gray-800: #262626;
+            --success: #16A34A;
+            --error: #DC2626;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--white);
+            color: var(--black);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: var(--black);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .oscar-icon {
+            width: 40px;
+            height: 40px;
+        }
+
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gold);
+            letter-spacing: 0.5px;
+        }
+
+        .logo-year {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            color: var(--gray-400);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--gold);
+            color: var(--black);
+        }
+
+        .btn-primary:hover {
+            background: var(--gold-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--gold);
+            color: var(--gold);
+        }
+
+        .btn-outline:hover {
+            background: var(--gold);
+            color: var(--black);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* User Section */
+        .user-bar {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .user-input {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-input label {
+            font-weight: 500;
+            color: var(--gray-600);
+        }
+
+        .user-input input {
+            padding: 10px 16px;
+            border: 1.5px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.2s;
+            width: 200px;
+        }
+
+        .user-input input:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .stats {
+            display: flex;
+            gap: 32px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--black);
+            font-family: 'Playfair Display', serif;
+        }
+
+        .stat-value.penalty {
+            color: var(--error);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--gray-400);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--black);
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .section-meta {
+            font-size: 0.875rem;
+            color: var(--gray-400);
+        }
+
+        /* Films Seen */
+        .films-section {
+            margin-bottom: 48px;
+        }
+
+        .films-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .film-card {
+            position: relative;
+            padding: 16px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: var(--white);
+        }
+
+        .film-card:hover {
+            border-color: var(--gold);
+        }
+
+        .film-card.checked {
+            background: linear-gradient(135deg, #FFFBF0 0%, #FFF8E7 100%);
+            border-color: var(--gold);
+        }
+
+        .film-card input {
+            display: none;
+        }
+
+        .film-card .check-icon {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--gray-300);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .film-card.checked .check-icon {
+            background: var(--gold);
+            border-color: var(--gold);
+        }
+
+        .film-card .check-icon svg {
+            width: 12px;
+            height: 12px;
+            stroke: white;
+            stroke-width: 3;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .film-card.checked .check-icon svg {
+            opacity: 1;
+        }
+
+        .film-name {
+            font-weight: 500;
+            padding-right: 30px;
+        }
+
+        /* Categories */
+        .categories-grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .category-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .category-header {
+            padding: 16px 20px;
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .category-badge {
+            font-size: 0.7rem;
+            padding: 4px 10px;
+            background: var(--gold);
+            color: var(--black);
+            border-radius: 20px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .nominees-list {
+            padding: 8px;
+        }
+
+        .nominee-option {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: 1.5px solid transparent;
+        }
+
+        .nominee-option:hover {
+            background: var(--gray-50);
+        }
+
+        .nominee-option.selected {
+            background: linear-gradient(135deg, #FFFBF0 0%, #FFF8E7 100%);
+            border-color: var(--gold);
+        }
+
+        .nominee-option input {
+            display: none;
+        }
+
+        .radio-outer {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--gray-300);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.15s ease;
+        }
+
+        .nominee-option.selected .radio-outer {
+            border-color: var(--gold);
+        }
+
+        .radio-inner {
+            width: 10px;
+            height: 10px;
+            background: var(--gold);
+            border-radius: 50%;
+            transform: scale(0);
+            transition: transform 0.15s ease;
+        }
+
+        .nominee-option.selected .radio-inner {
+            transform: scale(1);
+        }
+
+        .nominee-info {
+            flex: 1;
+        }
+
+        .nominee-name {
+            font-weight: 500;
+            color: var(--black);
+        }
+
+        .nominee-detail {
+            font-size: 0.875rem;
+            color: var(--gray-400);
+            margin-top: 2px;
+        }
+
+        /* Scoring Info */
+        .scoring-bar {
+            background: var(--black);
+            color: var(--white);
+            padding: 16px 24px;
+            border-radius: 10px;
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            flex-wrap: wrap;
+        }
+
+        .scoring-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.875rem;
+        }
+
+        .scoring-item .points {
+            font-weight: 600;
+            color: var(--gold);
+        }
+
+        .scoring-item.penalty .points {
+            color: #F87171;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px 24px;
+            color: var(--gray-400);
+            font-size: 0.875rem;
+            border-top: 1px solid var(--gray-200);
+            margin-top: 48px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .user-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .stats {
+                justify-content: center;
+            }
+
+            .user-input input {
+                width: 100%;
+            }
+
+            .films-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .scoring-bar {
+                gap: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <svg class="oscar-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <ellipse cx="20" cy="8" rx="6" ry="7" fill="#C5A572"/>
+                    <path d="M14 14C14 14 13 18 13 22C13 26 14 32 14 32L20 36L26 32C26 32 27 26 27 22C27 18 26 14 26 14" fill="#C5A572"/>
+                    <ellipse cx="20" cy="14" rx="5" ry="2" fill="#A8894D"/>
+                    <rect x="16" y="32" width="8" height="4" fill="#C5A572"/>
+                    <rect x="14" y="36" width="12" height="3" rx="1" fill="#C5A572"/>
+                </svg>
+                <div>
+                    <div class="logo-text">Oscar Ballot</div>
+                    <div class="logo-year">98th Academy Awards</div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-outline" onclick="exportBallot()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Export
+                </button>
+                <a href="results.html" class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 20V10"/>
+                        <path d="M12 20V4"/>
+                        <path d="M6 20v-6"/>
+                    </svg>
+                    View Results
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="user-bar">
+            <div class="user-input">
+                <label for="userName">Your Name</label>
+                <input type="text" id="userName" placeholder="Enter your name">
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="pickedCount">0/24</div>
+                    <div class="stat-label">Picks Made</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="currentScore">0</div>
+                    <div class="stat-label">Score</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value penalty" id="seenPenalty">-10</div>
+                    <div class="stat-label">Penalty</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="scoring-bar">
+            <div class="scoring-item">
+                <span class="points">+2 pts</span>
+                <span>Major Categories</span>
+            </div>
+            <div class="scoring-item">
+                <span class="points">+1 pt</span>
+                <span>Other Categories</span>
+            </div>
+            <div class="scoring-item penalty">
+                <span class="points">-1 pt</span>
+                <span>Each Film Not Seen</span>
+            </div>
+        </div>
+
+        <section class="films-section">
+            <div class="section-header">
+                <h2 class="section-title">Best Picture Films Seen</h2>
+                <span class="section-meta" id="seenCountLabel">0 of 10 seen</span>
+            </div>
+            <div class="films-grid" id="filmsGrid"></div>
+        </section>
+
+        <section>
+            <div class="section-header">
+                <h2 class="section-title">Your Picks</h2>
+                <span class="section-meta">24 Categories</span>
+            </div>
+            <div class="categories-grid" id="categoriesSection"></div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>98th Academy Awards &bull; Sunday, March 15, 2026 &bull; Hosted by Conan O'Brien</p>
+    </footer>
+
+    <script>
+        const BEST_PICTURE_FILMS = [
+            "Bugonia", "F1", "Frankenstein", "Hamnet", "Marty Supreme",
+            "One Battle After Another", "The Secret Agent", "Sentimental Value", "Sinners", "Train Dreams"
+        ];
+
+        const MAIN_CATEGORIES = [
+            "Best Picture", "Directing", "Actor in a Leading Role", "Actress in a Leading Role",
+            "Actor in a Supporting Role", "Actress in a Supporting Role",
+            "Writing (Original Screenplay)", "Writing (Adapted Screenplay)"
+        ];
+
+        const CATEGORIES = {
+            "Best Picture": [
+                { name: "Bugonia" }, { name: "F1" }, { name: "Frankenstein" }, { name: "Hamnet" },
+                { name: "Marty Supreme" }, { name: "One Battle After Another" }, { name: "The Secret Agent" },
+                { name: "Sentimental Value" }, { name: "Sinners" }, { name: "Train Dreams" }
+            ],
+            "Directing": [
+                { name: "Chloé Zhao", film: "Hamnet" }, { name: "Josh Safdie", film: "Marty Supreme" },
+                { name: "Paul Thomas Anderson", film: "One Battle After Another" },
+                { name: "Joachim Trier", film: "Sentimental Value" }, { name: "Ryan Coogler", film: "Sinners" }
+            ],
+            "Actor in a Leading Role": [
+                { name: "Timothée Chalamet", film: "Marty Supreme" }, { name: "Leonardo DiCaprio", film: "One Battle After Another" },
+                { name: "Ethan Hawke", film: "Blue Moon" }, { name: "Michael B. Jordan", film: "Sinners" },
+                { name: "Wagner Moura", film: "The Secret Agent" }
+            ],
+            "Actress in a Leading Role": [
+                { name: "Jessie Buckley", film: "Hamnet" }, { name: "Rose Byrne", film: "If I Had Legs I'd Kick You" },
+                { name: "Kate Hudson", film: "Song Sung Blue" }, { name: "Renate Reinsve", film: "Sentimental Value" },
+                { name: "Emma Stone", film: "Bugonia" }
+            ],
+            "Actor in a Supporting Role": [
+                { name: "Benicio del Toro", film: "One Battle After Another" }, { name: "Jacob Elordi", film: "Frankenstein" },
+                { name: "Delroy Lindo", film: "Sinners" }, { name: "Sean Penn", film: "One Battle After Another" },
+                { name: "Stellan Skarsgård", film: "Sentimental Value" }
+            ],
+            "Actress in a Supporting Role": [
+                { name: "Elle Fanning", film: "Sentimental Value" }, { name: "Inga Ibsdotter Lilleaas", film: "Sentimental Value" },
+                { name: "Amy Madigan", film: "Weapons" }, { name: "Wunmi Mosaku", film: "Sinners" },
+                { name: "Teyana Taylor", film: "One Battle After Another" }
+            ],
+            "Writing (Original Screenplay)": [
+                { name: "Robert Kaplow", film: "Blue Moon" }, { name: "Jafar Panahi", film: "It Was Just an Accident" },
+                { name: "Ronald Bronstein & Josh Safdie", film: "Marty Supreme" },
+                { name: "Eskil Vogt & Joachim Trier", film: "Sentimental Value" }, { name: "Ryan Coogler", film: "Sinners" }
+            ],
+            "Writing (Adapted Screenplay)": [
+                { name: "Will Tracy", film: "Bugonia" }, { name: "Guillermo del Toro", film: "Frankenstein" },
+                { name: "Chloé Zhao & Maggie O'Farrell", film: "Hamnet" }, { name: "Paul Thomas Anderson", film: "One Battle After Another" },
+                { name: "Clint Bentley & Greg Kwedar", film: "Train Dreams" }
+            ],
+            "Animated Feature Film": [
+                { name: "Arco" }, { name: "Elio" }, { name: "KPop Demon Hunters" },
+                { name: "Little Amélie or the Character of Rain" }, { name: "Zootopia 2" }
+            ],
+            "Animated Short Film": [
+                { name: "Butterfly" }, { name: "Forevergreen" }, { name: "The Girl Who Cried Pearls" },
+                { name: "Retirement Plan" }, { name: "The Three Sisters" }
+            ],
+            "Cinematography": [
+                { name: "Frankenstein" }, { name: "Marty Supreme" }, { name: "One Battle After Another" },
+                { name: "Sinners" }, { name: "Train Dreams" }
+            ],
+            "Costume Design": [
+                { name: "Avatar: Fire and Ash" }, { name: "Frankenstein" }, { name: "Hamnet" },
+                { name: "Marty Supreme" }, { name: "Sinners" }
+            ],
+            "Documentary Feature Film": [
+                { name: "The Alabama Solution" }, { name: "Come See Me in the Good Light" },
+                { name: "Cutting Through Rocks" }, { name: "Mr. Nobody Against Putin" }, { name: "The Perfect Neighbor" }
+            ],
+            "Documentary Short Film": [
+                { name: "All the Empty Rooms" }, { name: "Armed Only With a Camera" }, { name: "Children No More" },
+                { name: "The Devil Is Busy" }, { name: "Perfectly a Strangeness" }
+            ],
+            "Film Editing": [
+                { name: "F1" }, { name: "Marty Supreme" }, { name: "One Battle After Another" },
+                { name: "Sentimental Value" }, { name: "Sinners" }
+            ],
+            "International Feature Film": [
+                { name: "The Secret Agent", film: "Brazil" }, { name: "It Was Just an Accident", film: "France" },
+                { name: "Sentimental Value", film: "Norway" }, { name: "Sirāt", film: "Spain" },
+                { name: "The Voice of Hind Rajab", film: "Tunisia" }
+            ],
+            "Casting": [
+                { name: "Nina Gold", film: "Hamnet" }, { name: "Jennifer Venditti", film: "Marty Supreme" },
+                { name: "Cassandra Kulukundis", film: "One Battle After Another" },
+                { name: "Gabriel Domingues", film: "The Secret Agent" }, { name: "Francine Maisler", film: "Sinners" }
+            ],
+            "Makeup and Hairstyling": [
+                { name: "Frankenstein" }, { name: "Kokuho" }, { name: "Sinners" },
+                { name: "The Smashing Machine" }, { name: "The Ugly Stepsister" }
+            ],
+            "Music (Original Score)": [
+                { name: "Jerskin Fendrix", film: "Bugonia" }, { name: "Alexandre Desplat", film: "Frankenstein" },
+                { name: "Max Richter", film: "Hamnet" }, { name: "Jonny Greenwood", film: "One Battle After Another" },
+                { name: "Ludwig Goransson", film: "Sinners" }
+            ],
+            "Music (Original Song)": [
+                { name: '"Dear Me"', film: "Diane Warren: Relentless" }, { name: '"Golden"', film: "KPop Demon Hunters" },
+                { name: '"I Lied to You"', film: "Sinners" }, { name: '"Sweet Dreams of Joy"', film: "Viva Verdi!" },
+                { name: '"Train Dreams"', film: "Train Dreams" }
+            ],
+            "Production Design": [
+                { name: "Frankenstein" }, { name: "Hamnet" }, { name: "Marty Supreme" },
+                { name: "One Battle After Another" }, { name: "Sinners" }
+            ],
+            "Live Action Short Film": [
+                { name: "Butcher's Stain" }, { name: "A Friend of Dorothy" }, { name: "Jane Austen's Period Drama" },
+                { name: "The Singers" }, { name: "Two People Exchanging Saliva" }
+            ],
+            "Sound": [
+                { name: "F1" }, { name: "Frankenstein" }, { name: "One Battle After Another" },
+                { name: "Sinners" }, { name: "Sirāt" }
+            ],
+            "Visual Effects": [
+                { name: "Avatar: Fire and Ash" }, { name: "F1" }, { name: "Jurassic World Rebirth" },
+                { name: "The Lost Bus" }, { name: "Sinners" }
+            ]
+        };
+
+        let state = { userName: '', filmsSeen: [], picks: {} };
+
+        function loadState() {
+            const saved = localStorage.getItem('oscarBallot2026');
+            if (saved) {
+                state = JSON.parse(saved);
+                document.getElementById('userName').value = state.userName || '';
+            }
+        }
+
+        function saveState() {
+            state.userName = document.getElementById('userName').value;
+            localStorage.setItem('oscarBallot2026', JSON.stringify(state));
+            updateScores();
+        }
+
+        function renderFilmsSeen() {
+            const grid = document.getElementById('filmsGrid');
+            grid.innerHTML = BEST_PICTURE_FILMS.map(film => {
+                const checked = state.filmsSeen.includes(film);
+                return `
+                    <label class="film-card ${checked ? 'checked' : ''}" onclick="toggleFilmSeen('${film}')">
+                        <input type="checkbox" ${checked ? 'checked' : ''}>
+                        <span class="check-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </span>
+                        <span class="film-name">${film}</span>
+                    </label>
+                `;
+            }).join('');
+        }
+
+        function toggleFilmSeen(film) {
+            const index = state.filmsSeen.indexOf(film);
+            if (index > -1) {
+                state.filmsSeen.splice(index, 1);
+            } else {
+                state.filmsSeen.push(film);
+            }
+            saveState();
+            renderFilmsSeen();
+        }
+
+        function renderCategories() {
+            const section = document.getElementById('categoriesSection');
+            section.innerHTML = Object.entries(CATEGORIES).map(([category, nominees]) => {
+                const isMain = MAIN_CATEGORIES.includes(category);
+                return `
+                    <div class="category-card">
+                        <div class="category-header">
+                            <h3 class="category-title">${category}</h3>
+                            ${isMain ? '<span class="category-badge">2 POINTS</span>' : ''}
+                        </div>
+                        <div class="nominees-list">
+                            ${nominees.map((nominee, idx) => {
+                                const selected = state.picks[category] === nominee.name;
+                                const escapedName = nominee.name.replace(/'/g, "\\'").replace(/"/g, '\\"');
+                                return `
+                                    <label class="nominee-option ${selected ? 'selected' : ''}" onclick="selectNominee('${category}', '${escapedName}')">
+                                        <input type="radio" name="${category}" ${selected ? 'checked' : ''}>
+                                        <span class="radio-outer"><span class="radio-inner"></span></span>
+                                        <span class="nominee-info">
+                                            <div class="nominee-name">${nominee.name}</div>
+                                            ${nominee.film ? `<div class="nominee-detail">${nominee.film}</div>` : ''}
+                                        </span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectNominee(category, nominee) {
+            state.picks[category] = nominee;
+            saveState();
+            renderCategories();
+        }
+
+        function updateScores() {
+            const pickedCount = Object.keys(state.picks).length;
+            const totalCategories = Object.keys(CATEGORIES).length;
+            document.getElementById('pickedCount').textContent = `${pickedCount}/${totalCategories}`;
+
+            const filmsNotSeen = BEST_PICTURE_FILMS.length - state.filmsSeen.length;
+            document.getElementById('seenPenalty').textContent = `-${filmsNotSeen}`;
+            document.getElementById('seenCountLabel').textContent = `${state.filmsSeen.length} of ${BEST_PICTURE_FILMS.length} seen`;
+
+            // Get winners from localStorage if available
+            const winnersData = localStorage.getItem('oscarWinners2026');
+            const winners = winnersData ? JSON.parse(winnersData) : {};
+
+            let score = -filmsNotSeen;
+            Object.entries(winners).forEach(([category, winner]) => {
+                if (state.picks[category] === winner) {
+                    score += MAIN_CATEGORIES.includes(category) ? 2 : 1;
+                }
+            });
+            document.getElementById('currentScore').textContent = score;
+        }
+
+        function exportBallot() {
+            const exportData = {
+                name: state.userName || 'Anonymous',
+                filmsSeen: state.filmsSeen,
+                picks: state.picks,
+                exportedAt: new Date().toISOString()
+            };
+
+            const dataStr = btoa(JSON.stringify(exportData));
+            navigator.clipboard.writeText(dataStr).then(() => {
+                alert('Ballot copied to clipboard! Share this code with your group admin.');
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            renderFilmsSeen();
+            renderCategories();
+            updateScores();
+            document.getElementById('userName').addEventListener('input', saveState);
+        });
+    </script>
+</body>
+</html>
