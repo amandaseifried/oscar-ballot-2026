@@ -487,6 +487,13 @@
                 </div>
             </div>
             <div class="header-actions">
+                <button class="btn btn-outline" id="resetBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                        <path d="M3 3v5h5"/>
+                    </svg>
+                    Reset
+                </button>
                 <button class="btn btn-outline" id="exportBtn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -825,6 +832,17 @@
             });
         }
 
+        function resetBallot() {
+            if (confirm('Are you sure you want to clear all your picks? This cannot be undone.')) {
+                state = { userName: '', filmsSeen: [], picks: {} };
+                localStorage.removeItem('oscarBallot2026');
+                document.getElementById('userName').value = '';
+                renderFilmsSeen();
+                renderCategories();
+                updateScores();
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             loadState();
             renderFilmsSeen();
@@ -836,6 +854,7 @@
             setupCategoriesClickHandler();
             document.getElementById('userName').addEventListener('input', saveState);
             document.getElementById('exportBtn').addEventListener('click', exportBallot);
+            document.getElementById('resetBtn').addEventListener('click', resetBallot);
         });
     </script>
 </body>
