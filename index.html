@@ -430,6 +430,39 @@
             color: #F87171;
         }
 
+        /* Countdown */
+        .countdown-banner {
+            background: linear-gradient(135deg, var(--black) 0%, #2d2d2d 100%);
+            color: var(--white);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid var(--gold);
+        }
+
+        .countdown-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--gold);
+            margin-bottom: 8px;
+        }
+
+        .countdown-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .countdown-value.urgent {
+            color: #F87171;
+        }
+
+        .countdown-sub {
+            font-size: 0.85rem;
+            color: var(--gray-400);
+            margin-top: 4px;
+        }
+
         /* Footer */
         .footer {
             text-align: center;
@@ -513,6 +546,12 @@
             </div>
         </div>
     </header>
+
+    <div class="countdown-banner">
+        <div class="countdown-label">Picks Due Before Ceremony</div>
+        <div class="countdown-value" id="countdownValue">-- days</div>
+        <div class="countdown-sub">Sunday, March 15, 2026 at 7:00 PM ET</div>
+    </div>
 
     <main class="container">
         <div class="user-bar">
@@ -843,6 +882,37 @@
             }
         }
 
+        function updateCountdown() {
+            // Oscars: March 15, 2026 at 7:00 PM ET (00:00 UTC on March 16)
+            const oscarsDate = new Date('2026-03-15T19:00:00-05:00');
+            const now = new Date();
+            const diff = oscarsDate - now;
+
+            const countdownEl = document.getElementById('countdownValue');
+
+            if (diff <= 0) {
+                countdownEl.textContent = 'Ceremony Started!';
+                countdownEl.classList.add('urgent');
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+            if (days === 0) {
+                // Less than 24 hours - show hours and minutes
+                countdownEl.textContent = `${hours}h ${minutes}m remaining`;
+                countdownEl.classList.add('urgent');
+            } else if (days === 1) {
+                countdownEl.textContent = `1 day, ${hours} hours`;
+                countdownEl.classList.add('urgent');
+            } else {
+                countdownEl.textContent = `${days} days`;
+                countdownEl.classList.remove('urgent');
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             loadState();
             renderFilmsSeen();
@@ -855,6 +925,10 @@
             document.getElementById('userName').addEventListener('input', saveState);
             document.getElementById('exportBtn').addEventListener('click', exportBallot);
             document.getElementById('resetBtn').addEventListener('click', resetBallot);
+
+            // Start countdown
+            updateCountdown();
+            setInterval(updateCountdown, 60000); // Update every minute
         });
     </script>
 </body>
