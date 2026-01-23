@@ -805,23 +805,35 @@
             localStorage.setItem('oscarWinners2026', JSON.stringify(winners));
         }
 
+        const ADMIN_PASSWORD = 'Amanda!';
+
         function toggleAdminMode() {
-            adminMode = !adminMode;
             const btn = document.getElementById('adminToggle');
             const text = document.getElementById('adminToggleText');
             const bar = document.getElementById('adminBar');
 
-            if (adminMode) {
+            if (!adminMode) {
+                // Entering admin mode - require password
+                const password = prompt('Enter admin password:');
+                if (password !== ADMIN_PASSWORD) {
+                    if (password !== null) {
+                        alert('Incorrect password');
+                    }
+                    return;
+                }
+                adminMode = true;
                 btn.classList.add('active');
                 text.textContent = 'Exit Admin Mode';
                 bar.classList.remove('hidden');
             } else {
+                // Exiting admin mode
+                adminMode = false;
                 btn.classList.remove('active');
                 text.textContent = 'Enter Admin Mode';
                 bar.classList.add('hidden');
             }
 
-            renderWinners();
+            renderAll();
         }
 
         function importBallot() {
