@@ -733,6 +733,9 @@
             ]
         };
 
+        // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BELOW
+        const API_URL = 'YOUR_GOOGLE_SCRIPT_URL_HERE';
+
         let state = { userName: '', filmsSeen: [], picks: {} };
 
         function loadState() {
@@ -875,15 +878,37 @@
                 return;
             }
 
-            // Mark as submitted
+            // Mark as submitted locally
             state.submitted = true;
             state.submittedAt = new Date().toISOString();
             saveState();
 
-            alert(`Ballot submitted successfully!\n\nName: ${state.userName}\nPicks: ${pickedCount}/${totalCategories}\nFilms Seen: ${state.filmsSeen.length}/10\n\nGood luck!`);
+            // Submit to shared Google Sheet
+            const btn = document.getElementById('submitBtn');
+            btn.textContent = 'Submitting...';
+            btn.disabled = true;
 
-            // Update button to show submitted state
-            updateSubmitButton();
+            const submitData = {
+                name: state.userName,
+                filmsSeen: state.filmsSeen,
+                picks: state.picks
+            };
+            const submitUrl = API_URL + '?action=submit&data=' + encodeURIComponent(JSON.stringify(submitData));
+
+            fetch(submitUrl)
+                .then(r => r.json())
+                .then(result => {
+                    if (result.error) throw new Error(result.error);
+                    alert(`Ballot submitted successfully!\n\nName: ${state.userName}\nPicks: ${pickedCount}/${totalCategories}\nFilms Seen: ${state.filmsSeen.length}/10\n\nGood luck!`);
+                    updateSubmitButton();
+                })
+                .catch(err => {
+                    console.error('Submit error:', err);
+                    alert('There was a problem submitting. Please try again.');
+                    btn.disabled = false;
+                    state.submitted = false;
+                    saveState();
+                });
         }
 
         function updateSubmitButton() {
@@ -942,6 +967,19 @@
             }
         }
 
+        // Auto-sync existing picks to Google Sheet for users who already submitted
+        function syncExistingPicks() {
+            if (state.submitted && state.userName && Object.keys(state.picks).length > 0) {
+                const syncData = {
+                    name: state.userName,
+                    filmsSeen: state.filmsSeen,
+                    picks: state.picks
+                };
+                const syncUrl = API_URL + '?action=submit&data=' + encodeURIComponent(JSON.stringify(syncData));
+                fetch(syncUrl).catch(err => console.error('Sync error:', err));
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             loadState();
             renderFilmsSeen();
@@ -959,6 +997,9 @@
             // Start countdown
             updateCountdown();
             setInterval(updateCountdown, 60000); // Update every minute
+
+            // Auto-sync existing picks to shared backend
+            syncExistingPicks();
         });
     </script>
 </body>

@@ -572,7 +572,7 @@
                 </tbody>
             </table>
             <div class="no-participants" id="noParticipants">
-                No ballots imported yet. Import ballots using the form above.
+                No ballots submitted yet. Share the ballot page to get started!
             </div>
         </section>
 
@@ -715,49 +715,37 @@
             ]
         };
 
+        // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BELOW
+        const API_URL = 'YOUR_GOOGLE_SCRIPT_URL_HERE';
+
         let adminMode = false;
         let participants = [];
         let winners = {};
 
-        function loadData() {
-            const savedParticipants = localStorage.getItem('oscarParticipants2026');
-            if (savedParticipants) {
-                participants = JSON.parse(savedParticipants);
+        async function loadData() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                if (data.error) throw new Error(data.error);
+                participants = data.participants || [];
+                winners = data.winners || {};
+                // Cache to localStorage as fallback
+                localStorage.setItem('oscarParticipants2026', JSON.stringify(participants));
+                localStorage.setItem('oscarWinners2026', JSON.stringify(winners));
+            } catch (err) {
+                console.error('API fetch error, falling back to localStorage:', err);
+                const savedParticipants = localStorage.getItem('oscarParticipants2026');
+                if (savedParticipants) participants = JSON.parse(savedParticipants);
+                const savedWinners = localStorage.getItem('oscarWinners2026');
+                if (savedWinners) winners = JSON.parse(savedWinners);
             }
-
-            const savedWinners = localStorage.getItem('oscarWinners2026');
-            if (savedWinners) {
-                winners = JSON.parse(savedWinners);
-            }
-
-            // Also add local user's ballot if exists
-            const localBallot = localStorage.getItem('oscarBallot2026');
-            if (localBallot) {
-                const local = JSON.parse(localBallot);
-                if (local.userName && Object.keys(local.picks).length > 0) {
-                    const exists = participants.find(p => p.name === local.userName);
-                    if (!exists) {
-                        participants.push({
-                            name: local.userName,
-                            filmsSeen: local.filmsSeen || [],
-                            picks: local.picks
-                        });
-                        saveParticipants();
-                    } else {
-                        // Update existing
-                        exists.filmsSeen = local.filmsSeen || [];
-                        exists.picks = local.picks;
-                        saveParticipants();
-                    }
-                }
-            }
-        }
-
-        function saveParticipants() {
-            localStorage.setItem('oscarParticipants2026', JSON.stringify(participants));
         }
 
         function saveWinners() {
+            // Save to Google Sheet
+            const url = API_URL + '?action=setWinners&data=' + encodeURIComponent(JSON.stringify({ winners: winners }));
+            fetch(url).catch(err => console.error('Save winners error:', err));
+            // Also cache locally
             localStorage.setItem('oscarWinners2026', JSON.stringify(winners));
         }
 
@@ -871,8 +859,12 @@
         function deleteParticipant(idx) {
             const name = participants[idx].name;
             if (confirm(`Are you sure you want to remove ${name}'s ballot?`)) {
+                // Delete from Google Sheet
+                const url = API_URL + '?action=deleteParticipant&data=' + encodeURIComponent(JSON.stringify({ name: name }));
+                fetch(url).catch(err => console.error('Delete error:', err));
+                // Remove locally and re-render
                 participants.splice(idx, 1);
-                saveParticipants();
+                localStorage.setItem('oscarParticipants2026', JSON.stringify(participants));
                 renderAll();
             }
         }
@@ -1035,8 +1027,9 @@
             renderComparison();
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            loadData();
+        document.addEventListener('DOMContentLoaded', async () => {
+            document.getElementById('participantCount').textContent = 'Loading data...';
+            await loadData();
             renderAll();
 
             // Admin toggle
