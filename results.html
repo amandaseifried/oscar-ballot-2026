@@ -783,17 +783,22 @@
         function calculateScore(participant) {
             const filmsNotSeen = BEST_PICTURE_FILMS.length - (participant.filmsSeen?.length || 0);
             let correctPicks = 0;
+            let ptsEarned = 0;
             let score = -filmsNotSeen;
+            const n = Object.keys(CATEGORIES).length; // 24
+            const confidence = participant.confidence || Object.keys(CATEGORIES);
 
             Object.entries(winners).forEach(([category, winner]) => {
                 if (participant.picks[category] === winner) {
-                    const points = MAIN_CATEGORIES.includes(category) ? 2 : 1;
-                    score += points;
+                    const rank = confidence.indexOf(category); // 0-indexed
+                    const pts = rank === -1 ? 1 : (n - rank);
+                    score += pts;
+                    ptsEarned += pts;
                     correctPicks++;
                 }
             });
 
-            return { score, correctPicks, penalty: filmsNotSeen };
+            return { score, correctPicks, ptsEarned, penalty: filmsNotSeen };
         }
 
         function renderLeaderboard() {
@@ -808,6 +813,7 @@
                     <th>Rank</th>
                     <th>Name</th>
                     <th>Correct</th>
+                    <th>Pts Earned</th>
                     <th>Penalty</th>
                     <th>Score</th>
                     ${adminMode ? '<th></th>' : ''}
@@ -838,6 +844,7 @@
                         <td class="rank ${rankClass}">#${rank}</td>
                         <td class="player-name">${p.name}</td>
                         <td class="correct-count">${p.correctPicks}/${Object.keys(winners).length}</td>
+                        <td class="correct-count">${p.ptsEarned}</td>
                         <td class="penalty-count">-${p.penalty}</td>
                         <td class="score">${p.score}</td>
                         ${adminMode ? `<td><button class="delete-btn" data-participant-idx="${p.originalIdx}">Delete</button></td>` : ''}
@@ -886,7 +893,6 @@
                         <div class="winner-card ${isMain ? 'main-category' : ''}" data-category-index="${catIdx}">
                             <div class="winner-card-header">
                                 <span class="winner-card-title">${category}</span>
-                                ${isMain ? '<span class="winner-badge">2 PTS</span>' : ''}
                             </div>
                             <div class="winner-card-body">
                                 <select class="admin-select ${winner ? 'has-winner' : ''}">
@@ -905,7 +911,6 @@
                         <div class="winner-card ${isMain ? 'main-category' : ''}">
                             <div class="winner-card-header">
                                 <span class="winner-card-title">${category}</span>
-                                ${isMain ? '<span class="winner-badge">2 PTS</span>' : ''}
                             </div>
                             <div class="winner-card-body">
                                 ${winner ? `
