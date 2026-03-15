@@ -944,7 +944,7 @@
                     <div class="category-card" data-category-index="${catIdx}">
                         <div class="category-header">
                             <h3 class="category-title">${category}</h3>
-                            ${isMain ? '<span class="category-badge">2 POINTS</span>' : ''}
+                            ${isMain ? '<span class="category-badge">MAJOR</span>' : ''}
                         </div>
                         <div class="nominees-list">
                             ${nominees.map((nominee, nomIdx) => {
@@ -1129,7 +1129,8 @@
                 const syncData = {
                     name: state.userName,
                     filmsSeen: state.filmsSeen,
-                    picks: state.picks
+                    picks: state.picks,
+                    confidence: state.confidence
                 };
                 const syncUrl = API_URL + '?action=submit&data=' + encodeURIComponent(JSON.stringify(syncData));
                 fetch(syncUrl).catch(err => console.error('Sync error:', err));
