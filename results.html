@@ -1049,6 +1049,14 @@
                     showView(this.dataset.view, this);
                 });
             });
+
+            // Auto-poll every 30 seconds (skip if user is in admin mode to avoid disrupting edits)
+            setInterval(async () => {
+                if (!adminMode) {
+                    await loadData();
+                    renderAll();
+                }
+            }, 30000);
         });
     </script>
 </body>
