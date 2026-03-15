@@ -580,6 +580,9 @@
             <button class="toggle-btn active" id="winnersToggle" data-view="winners">Winners</button>
             <button class="toggle-btn" id="comparisonToggle" data-view="comparison">Compare Picks</button>
         </div>
+        <div id="picksLockedMsg" style="display:none; text-align:center; padding:24px; color:var(--gray-400); font-style:italic;">
+            🔒 Picks are hidden until the ceremony begins at 7:00 PM ET
+        </div>
 
         <section id="winnersView" class="winners-section">
         </section>
@@ -1042,6 +1045,16 @@
 
             // Clear winners
             document.getElementById('clearWinnersBtn').addEventListener('click', clearAllWinners);
+
+            // Hide Compare Picks until 7pm ET
+            const ceremonyTime = new Date('2026-03-15T19:00:00-05:00');
+            function updatePicksVisibility() {
+                const picksUnlocked = new Date() >= ceremonyTime || adminMode;
+                document.getElementById('comparisonToggle').style.display = picksUnlocked ? '' : 'none';
+                document.getElementById('picksLockedMsg').style.display = picksUnlocked ? 'none' : 'block';
+            }
+            updatePicksVisibility();
+            setInterval(updatePicksVisibility, 30000);
 
             // View toggles
             document.querySelectorAll('.toggle-btn').forEach(btn => {
